@@ -19,7 +19,8 @@ function read_patches_from_string(str){
 	while(parser.hasNext()){
 		// get the type
 		var type = parser.nextInt();
-
+		//console.log("Type: " + type);
+		
 		// figure out which one to parse
 		switch(type){
 			case 1: 									// polyhedron
@@ -55,7 +56,7 @@ function read_polyhedron(parser) {
 	// Construct the geometry directly
 	var geo = new THREE.Geometry();
 
-	console.log("NumFaces: " + numFaces + ",verts: " + numVertices);
+	//console.log("NumFaces: " + numFaces + ",verts: " + numVertices);
 
 	// all the vertices
 	for(var i = 0; i < numVertices; i++)
@@ -92,17 +93,20 @@ function read_polyhedron(parser) {
  **/
 function read_triangular(parser) {
 	// The degree
-	var degu;
+	var deg;
 
 	deg = parser.nextInt();
-
+	//console.log("Degree: " + deg);
+	
 	// read all the control points
 	var vecs = [];
-	for(var i = 0; i < (deg+2) * (deg+1)/2; i++){
-		vecs.push(read_vec3(parser));
+	for(var i = 0; i < ((deg+2) * (deg+1)/2); i++) {
+		vecs.push(read_vec3(parser));	
 	}
 
-	return {"type":type,"deg":deg, "pts":vecs};
+	//console.log(vecs);
+	
+	return {"type":3,"deg":deg,"pts":vecs};
 }
 
 /** Handles tensor-product patches
@@ -148,6 +152,7 @@ bvFileParser = function(str){
 		// append all the segments
 		this.stream = this.stream.concat(segs);
 	}
+	//console.log(this.stream);
 	this.currentPos = 0;
 }
 
@@ -161,7 +166,7 @@ constructor : bvFileParser,
 
 nextToken : function(){
 		    var last = this.currentPos;
-		    this.currentPos++;
+		    this.currentPos = this.currentPos + 1;
 		    return this.stream[last];
 	    },
 
@@ -180,6 +185,7 @@ function read_vec3(parser){
 	x = parser.nextFloat();
 	y = parser.nextFloat();
 	z = parser.nextFloat();
+	//console.log("X = " + x  + ", Y = " + y + ", Z = " + z);
 	return new THREE.Vector4(x,y,z,1.0);
 }
 
@@ -189,6 +195,7 @@ function read_vec4(parser){
 	y = parser.nextFloat();
 	z = parser.nextFloat();
 	w = parser.nextFloat();
+	
 	return new THREE.Vector4(x,y,z,w);
 }
 
