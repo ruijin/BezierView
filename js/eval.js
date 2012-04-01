@@ -42,14 +42,29 @@ function eval_control_mesh(type, degs,vecs){
 	// different for each type
 	var geo = new THREE.Geometry();
 
-	if (type == 1) {	// Polyhedron
-		// all the vertices
+	if (type == 3) {	// Triangular Bezier
+		deg = degs;
+		
+		size = ( (deg+1)*(deg+2) )/2;
+		for (var i = 0; i < size; i++)
+			geo.vertices.push(new THREE.Vertex(vecs[i].clone()));
+		
+		d = deg - 1;
+
+		for(i=0; i<=d;i++) {
+			for(j=0; j<=d-i;j++) {
+				k = d-i-j;
+				var v1 = b2i_i(i+1,j,k,deg);
+				var v2 = b2i_i(i,j+1,k,deg);
+				var v3 = b2i_i(i,j,k+1,deg);
+				
+				geo.faces.push(new THREE.Face3(v1,v2,v3));
+			}
+		}
 	} 
 	else {
 		degu = degs[0];
 		degv = degs[1];
-
-
 
 		size = (degu+1)*(degv+1);
 		for(var i = 0; i < size; i++){
@@ -242,7 +257,7 @@ function eval_triangular(patch, subDepth) {
 			// compute the curvatures (Gaussian, mean, min and max)
 			// at the (u,v) parameter
 			// TODO: Curvature
-            //h = crv3 (V00, V01, V02, V10, V20, V11, deg, crv_array[loc]);
+            h = crv3 (V00, V01, V02, V10, V20, V11, deg, crv_array[loc]);
 
             //printf("value %f at %d \n", h, loc);
             loc ++;
@@ -327,6 +342,10 @@ function eval_triangular(patch, subDepth) {
 	// THREE.js calculated normals
 	//geo.computeFaceNormals();
 	//geo.computeVertexNormals();
+
+	geo.rawP = eval_P;
+	geo.rawN = eval_N;
+	geo.rawCrv = crv_array;
 	
 	return geo;
 }
